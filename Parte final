@@ -1,0 +1,82 @@
+     else:
+                btn = tk.Button(botoes_frame, text=texto, font=fonte_botoes, bg=bg_cor, fg=fg_cor,
+                                command=lambda t=texto: self.clicar(t), bd=0, relief='flat', padx=5, pady=5)
+                btn.grid(row=linha, column=coluna, padx=5, pady=5, sticky=btn_sticky)
+
+            # Ajuste de layout para as células dos botões no frame
+            botoes_frame.grid_rowconfigure(linha, weight=1)
+            botoes_frame.grid_columnconfigure(coluna, weight=1)
+
+        # Ajustar a coluna do ponto para alinhar com os outros botões da linha 5
+        botoes_frame.grid_columnconfigure(2, weight=1)
+
+        # Configurar o redimensionamento das linhas e colunas para a janela principal
+        master.grid_rowconfigure(0, weight=1) # Linha do display
+        master.grid_rowconfigure(1, weight=5) # Linha do frame de botões
+        for i in range(4): # 4 colunas
+            master.grid_columnconfigure(i, weight=1)
+
+    def clicar(self, texto):
+        if self.expressao in ["Erro", "Divisão por Zero"]:
+            self.expressao = "" # Limpa a expressão se houver um erro anterior
+        self.expressao += texto
+        self.entrada.set(self.expressao)
+
+    def limpar(self):
+        self.expressao = ""
+        self.entrada.set("")
+
+    def calcular(self):
+        try:
+            # Substitui o símbolo de porcentagem para cálculo correto se necessário
+            # Ex: "50%*2" -> "0.5*2". Se for só "50%", vira "0.5".
+            expressao_para_eval = self.expressao.replace('%', '/100*')
+            if expressao_para_eval.endswith('/100*'):
+                expressao_para_eval = expressao_para_eval[:-1] # Remove o último '*' se for só porcentagem
+
+            resultado = str(eval(expressao_para_eval))
+            self.entrada.set(resultado)
+            self.expressao = resultado
+        except ZeroDivisionError:
+            self.entrada.set("Divisão por Zero")
+            self.expressao = ""
+        except Exception:
+            self.entrada.set("Erro")
+            self.expressao = ""
+            messagebox.showerror("Erro de Cálculo", "Expressão inválida ou incompleta.")
+
+    def inverter_sinal(self):
+        try:
+            if self.expressao and self.expressao not in ["Erro", "Divisão por Zero"]:
+                valor_atual = float(eval(self.expressao))
+                self.expressao = str(-valor_atual)
+                self.entrada.set(self.expressao)
+            elif self.entrada.get() and self.entrada.get() not in ["Erro", "Divisão por Zero"]:
+                valor_atual = float(self.entrada.get())
+                self.expressao = str(-valor_atual)
+                self.entrada.set(self.expressao)
+        except Exception:
+            self.entrada.set("Erro")
+            self.expressao = ""
+
+    def porcentagem(self):
+        try:
+            if self.expressao and self.expressao not in ["Erro", "Divisão por Zero"]:
+                valor_atual = float(eval(self.expressao))
+                self.expressao = str(valor_atual / 100)
+                self.entrada.set(self.expressao)
+            elif self.entrada.get() and self.entrada.get() not in ["Erro", "Divisão por Zero"]:
+                valor_atual = float(self.entrada.get())
+                self.expressao = str(valor_atual / 100)
+                self.entrada.set(self.expressao)
+        except Exception:
+            self.entrada.set("Erro")
+            self.expressao = ""
+
+def main():
+    root = tk.Tk()
+    calculadora_ui = Calculadora(root)
+    root.mainloop()
+
+if __name__ == "__main__":
+    main()
