@@ -1,0 +1,83 @@
+import tkinter as tk
+from tkinter import messagebox
+
+class Calculadora:
+    def __init__(self, master):
+        self.master = master
+        master.title("Calculadora Elegante")
+        master.geometry("300x450") # Tamanho inicial da janela
+        master.resizable(False, False) # Impede o redimensionamento da janela
+        master.configure(bg='#2e2e2e') # Cor de fundo escura
+
+        self.expressao = ""
+        self.entrada = tk.StringVar()
+
+        # Configuração da fonte para o display e botões
+        fonte_display = ('Arial', 24, 'bold')
+        fonte_botoes = ('Arial', 18, 'bold')
+
+        # Campo de Entrada (Display)
+        self.display = tk.Entry(master, textvariable=self.entrada, width=15, font=fonte_display,
+                                bd=0, insertwidth=2, justify='right', bg='#3a3a3a', fg='#ffffff',
+                                highlightbackground='#5a5a5a', highlightthickness=2)
+        self.display.grid(row=0, column=0, columnspan=4, padx=10, pady=20, sticky='nsew')
+        self.display.focus_set()
+
+        # Frame para os botões (para melhor organização e padding)
+        botoes_frame = tk.Frame(master, bg='#2e2e2e')
+        botoes_frame.grid(row=1, column=0, columnspan=4, padx=5, pady=5, sticky='nsew')
+
+        # Dicionário para cores dos botões
+        cores_botoes = {
+            'operador': '#ff9500', # Laranja
+            'numero': '#505050',  # Cinza escuro
+            'especial': '#d4d4d2', # Cinza claro
+            'igual': "#4183af"    # Laranja (mesmo que operador)
+        }
+        fg_cores = {
+            'operador': '#ffffff',
+            'numero': '#ffffff',
+            'especial': '#000000',
+            'igual': '#ffffff'
+        }
+
+        # Definição dos botões e suas posições
+        botoes = [
+            # Linha 1
+            ('C', 1, 0, 'especial'), ('+/-', 1, 1, 'especial'), ('%', 1, 2, 'especial'), ('/', 1, 3, 'operador'),
+            # Linha 2
+            ('7', 2, 0, 'numero'), ('8', 2, 1, 'numero'), ('9', 2, 2, 'numero'), ('*', 2, 3, 'operador'),
+            # Linha 3
+            ('4', 3, 0, 'numero'), ('5', 3, 1, 'numero'), ('6', 3, 2, 'numero'), ('-', 3, 3, 'operador'),
+            # Linha 4
+            ('1', 4, 0, 'numero'), ('2', 4, 1, 'numero'), ('3', 4, 2, 'numero'), ('+', 4, 3, 'operador'),
+            # Linha 5
+            ('0', 5, 0, 'numero'), ('.', 5, 2, 'numero'), ('=', 5, 3, 'igual')
+        ]
+
+        # Criar e posicionar os botões
+        for (texto, linha, coluna, tipo_btn) in botoes:
+            bg_cor = cores_botoes[tipo_btn]
+            fg_cor = fg_cores[tipo_btn]
+            btn_sticky = 'nsew'
+
+            if texto == '0':
+                btn = tk.Button(botoes_frame, text=texto, font=fonte_botoes, bg=bg_cor, fg=fg_cor,
+                                command=lambda t=texto: self.clicar(t), bd=0, relief='flat', padx=10, pady=10)
+                btn.grid(row=linha, column=coluna, columnspan=2, padx=5, pady=5, sticky=btn_sticky)
+            elif texto == '=':
+                btn = tk.Button(botoes_frame, text=texto, font=fonte_botoes, bg=bg_cor, fg=fg_cor,
+                                command=self.calcular, bd=0, relief='flat', padx=10, pady=10)
+                btn.grid(row=linha, column=coluna, padx=5, pady=5, sticky=btn_sticky)
+            elif texto == 'C':
+                btn = tk.Button(botoes_frame, text=texto, font=fonte_botoes, bg=bg_cor, fg=fg_cor,
+                                command=self.limpar, bd=0, relief='flat', padx=10, pady=10)
+                btn.grid(row=linha, column=coluna, padx=5, pady=5, sticky=btn_sticky)
+            elif texto == '+/-':
+                btn = tk.Button(botoes_frame, text=texto, font=fonte_botoes, bg=bg_cor, fg=fg_cor,
+                                command=self.inverter_sinal, bd=0, relief='flat', padx=10, pady=10)
+                btn.grid(row=linha, column=coluna, padx=5, pady=5, sticky=btn_sticky)
+            elif texto == '%':
+                btn = tk.Button(botoes_frame, text=texto, font=fonte_botoes, bg=bg_cor, fg=fg_cor,
+                                command=self.porcentagem, bd=0, relief='flat', padx=10, pady=10)
+                btn.grid(row=linha, column=coluna, padx=5, pady=5, sticky=btn_sticky)
